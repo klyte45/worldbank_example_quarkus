@@ -1,8 +1,15 @@
 package org.acme.dto.wb.country;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.acme.dto.CountryResponseItem;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class WBCountryResponseItem {
 
     private String id;
@@ -42,5 +49,9 @@ public class WBCountryResponseItem {
         private String id;
         private String iso2code;
         private String value;
+    }
+
+    public CountryResponseItem toCountryResponseItem(){
+        return new CountryResponseItem(id, name);
     }
 }

@@ -22,7 +22,6 @@ public class WBCountryResponseTest {
         assertEquals(6, objectMapped.getPagingInfo().getPages());
         assertEquals(50, objectMapped.getPagingInfo().getPerPage());
         assertEquals(299, objectMapped.getPagingInfo().getTotal());
-
         assertEquals(50, objectMapped.getData().size());
         assertEquals("AW", objectMapped.getData().get(0).getIso2Code());
     }

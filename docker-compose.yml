@@ -1,0 +1,28 @@
+version: "2.3"
+
+services:
+  backend:
+    build:
+      context: backend
+      dockerfile: src/main/docker/Dockerfile.jvm
+    image: klyte45/worldbank-backend:jvm
+    mem_limit: 128m
+    ports:
+      - "8080:8080"  
+    networks:
+      - quarkus
+
+  frontend:
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+    image: klyte45/worldbank-frontend:default
+    mem_limit: 128m
+    ports:
+      - "4200:80"
+    networks:
+      - quarkus
+
+networks:
+  quarkus:
+    driver: bridge

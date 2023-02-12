@@ -74,6 +74,10 @@
             <artifactId>resteasy-reactive-jackson</artifactId>
             <version>2.16.2.Final</version>
         </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-smallrye-openapi</artifactId>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

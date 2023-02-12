@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { environment } from 'src/environments/environment';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { observable, Observable, PartialObserver } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 export interface Country {
   id: string,
@@ -30,6 +30,9 @@ export class BackendService {
     return this.cachedCountryList;
   }
 
-  
-
+  getPovertyData(countryId: string): Observable<PovertyRatioYearData[]> {
+    
+    return this.http.get(environment.urlBase + `/povertyRatio/${countryId}`).pipe(map((val) => val as PovertyRatioYearData[]));
+    
+  }
 }

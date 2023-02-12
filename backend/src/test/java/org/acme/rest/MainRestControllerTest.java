@@ -33,12 +33,12 @@ public class MainRestControllerTest {
     WBCountryClient clientMock;
 
     @ParameterizedTest()
-    @ValueSource(ints = {0, 1, 3, 7})
+    @ValueSource(ints = {1, 3, 7})
     public void country_pageCrawlerTest(int totalPages) {
         Mockito.when(clientMock.listCountries(any())).thenReturn(
                 RestResponse.ok(
                         WBCountryResponse.builder()
-                                .pagingInfo(WBPagingInfoDTO.builder().pages(totalPages).build())
+                                .pagingInfo(WBPagingInfoDTO.builder().pages(totalPages).total(totalPages * 50).build())
                                 .data(Collections.nCopies(totalPages > 0 ? 50 : 0, WBCountryResponseItem.builder().id("TST").name("Test").build()))
                                 .build()
                 )
@@ -58,7 +58,7 @@ public class MainRestControllerTest {
         Mockito.when(clientMock.listCountries(any())).thenReturn(
                 RestResponse.ok(
                         WBCountryResponse.builder()
-                                .pagingInfo(WBPagingInfoDTO.builder().pages(1).build())
+                                .pagingInfo(WBPagingInfoDTO.builder().pages(1).total(1).build())
                                 .data(List.of(
                                         WBCountryResponseItem.builder().id(id).name(name).build()
                                 ))
@@ -74,12 +74,12 @@ public class MainRestControllerTest {
     }
 
     @ParameterizedTest()
-    @ValueSource(ints = {0, 1, 3, 7})
+    @ValueSource(ints = {1, 3, 7})
     public void povertyRatio_pageCrawlerTest(int totalPages) {
         Mockito.when(clientMock.getPovertyRatioData(any(), any())).thenReturn(
                 RestResponse.ok(
                         WBPovertyRatioResponse.builder()
-                                .pagingInfo(WBPagingInfoDTO.builder().pages(totalPages).build())
+                                .pagingInfo(WBPagingInfoDTO.builder().pages(totalPages).total(totalPages * 50).build())
                                 .data(Collections.nCopies(totalPages > 0 ? 50 : 0,
                                         WBPovertyRatioResponseItem.builder().date(1999).value(null).build()
                                 ))
@@ -101,7 +101,7 @@ public class MainRestControllerTest {
         Mockito.when(clientMock.getPovertyRatioData(any(), any())).thenReturn(
                 RestResponse.ok(
                         WBPovertyRatioResponse.builder()
-                                .pagingInfo(WBPagingInfoDTO.builder().pages(1).build())
+                                .pagingInfo(WBPagingInfoDTO.builder().pages(1).total(1).build())
                                 .data(List.of(
                                         WBPovertyRatioResponseItem.builder().date(year).value(value).build()
                                 ))
@@ -120,6 +120,14 @@ public class MainRestControllerTest {
     public void povertyRatio_notFoundTest() {
         Mockito.when(clientMock.getPovertyRatioData(any(), any())).thenReturn(
                 RestResponse.notFound()
+        );
+        given()
+                .when().get("/povertyRatio/ABC")
+                .then()
+                .statusCode(404);
+        Mockito.when(clientMock.getPovertyRatioData(any(), any())).thenReturn(
+                RestResponse.ok(WBPovertyRatioResponse.builder()
+                        .pagingInfo(WBPagingInfoDTO.builder().total(0).build()).build())
         );
         given()
                 .when().get("/povertyRatio/ABC")

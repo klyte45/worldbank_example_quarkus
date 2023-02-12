@@ -18,6 +18,7 @@ import org.jboss.resteasy.reactive.RestResponse;
 import javax.inject.Singleton;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotFoundException;
+import javax.ws.rs.core.Response;
 import java.util.Date;
 import java.util.List;
 import java.util.function.Function;
@@ -40,14 +41,18 @@ public class WBService {
             throw new NotFoundException();
         } else if (firstPageResponse.getStatus() / 100 == 2) {
             var firstPage = firstPageResponse.getEntity();
-            var response = firstPage.getData().stream().map(transformFn).collect(Collectors.toList());
-            var pages = firstPage.getPagingInfo().getPages();
-            for (int i = 2; i <= pages; i++) {
-                log.debug("Getting data: page {}/{}", i, pages);
-                var page = pageScannerFn.apply(i);
-                response.addAll(page.getEntity().getData().stream().map(transformFn).collect(Collectors.toList()));
+            if (firstPage.getPagingInfo().getTotal() > 0) {
+                var response = firstPage.getData().stream().map(transformFn).collect(Collectors.toList());
+                var pages = firstPage.getPagingInfo().getPages();
+                for (int i = 2; i <= pages; i++) {
+                    log.debug("Getting data: page {}/{}", i, pages);
+                    var page = pageScannerFn.apply(i);
+                    response.addAll(page.getEntity().getData().stream().map(transformFn).collect(Collectors.toList()));
+                }
+                return response;
+            } else {
+                throw new NotFoundException();
             }
-            return response;
         } else {
             log.info("Error getting information data @ {} - Status code {}:\n{}", firstPageResponse.getLocation(), firstPageResponse.getStatusInfo(), firstPageResponse.readEntity(String.class));
             throw new InternalServerErrorException(String.format("The data could not be processed due an unexpected HTTP status code %s from source service.", firstPageResponse.getStatus()));
